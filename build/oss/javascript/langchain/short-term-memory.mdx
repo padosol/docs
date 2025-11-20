@@ -297,8 +297,8 @@ const agent = createAgent({
   middleware: [
     summarizationMiddleware({
       model: "gpt-4o-mini",
-      maxTokensBeforeSummary: 4000,
-      messagesToKeep: 20,
+      trigger: { tokens: 4000 },
+      keep: { messages: 20 },
     }),
   ],
   checkpointer,

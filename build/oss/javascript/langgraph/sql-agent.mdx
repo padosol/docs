@@ -229,7 +229,7 @@ async function listTables(state: typeof MessagesAnnotation.State) {
 
 // Example: force a model to create a tool call
 async function callGetSchema(state: typeof MessagesAnnotation.State) {
-  const llmWithTools = llm.bindTools([getSchemaTool], {
+  const llmWithTools = model.bindTools([getSchemaTool], {
     tool_choice: "any",
   });
   const response = await llmWithTools.invoke(state.messages);
@@ -257,7 +257,7 @@ async function generateQuery(state: typeof MessagesAnnotation.State) {
   const systemMessage = new SystemMessage(generateQuerySystemPrompt);
   // We do not force a tool call here, to allow the model to
   // respond naturally when it obtains the solution.
-  const llmWithTools = llm.bindTools([queryTool]);
+  const llmWithTools = model.bindTools([queryTool]);
   const response = await llmWithTools.invoke([systemMessage, ...state.messages]);
 
   return { messages: [response] };
@@ -291,7 +291,7 @@ async function checkQuery(state: typeof MessagesAnnotation.State) {
   }
   const toolCall = lastMessage.tool_calls[0];
   const userMessage = new HumanMessage(toolCall.args.query);
-  const llmWithTools = llm.bindTools([queryTool], {
+  const llmWithTools = model.bindTools([queryTool], {
     tool_choice: "any",
   });
   const response = await llmWithTools.invoke([systemMessage, userMessage]);
