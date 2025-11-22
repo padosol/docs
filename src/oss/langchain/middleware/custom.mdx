@@ -923,34 +923,157 @@ const agent = createAgent({
 
 :::python
 
-You can modify system prompts in middleware using either `system_prompt` (`string`) or `system_message` (@[`SystemMessage`]). The @[`ModelRequest`] provides both for maximum flexibility.
+Modify system messages in middleware using the `system_message` field on `ModelRequest`. The `system_message` field contains a @[`SystemMessage`] object (even if the agent was created with a string `system_prompt`).
 
-:::
+**Example: Adding context to system message**
 
-:::js
-
-You can modify system prompts in middleware using either `systemPrompt` (`string`) or `systemMessage` (@[`SystemMessage`]). The @[`ModelRequest`] provides both for maximum flexibility.
-
-**Key behavior:**
-- Middleware receives both `systemPrompt` (string) and `systemMessage` (@[`SystemMessage`]) in the request
-- You can modify either `systemPrompt` or `systemMessage`, but **cannot set both in the same middleware call** - this prevents conflicts
-- Using `systemPrompt` creates a new simple system message (may overwrite cache control metadata)
-- Using `systemMessage` (JavaScript) or manually combining content blocks (Python) preserves existing cache control and structured content blocks
-- Multiple middleware can chain modifications sequentially across different middleware calls
-
-:::
-
-:::python
+<Tabs>
+<Tab title="Decorator">
 
 ```python
+from langchain.agents.middleware import wrap_model_call, ModelRequest, ModelResponse
+from langchain.messages import SystemMessage
+from typing import Callable
+
+
 @wrap_model_call
-def add_context_preserve_cache(
+def add_context(
     request: ModelRequest,
     handler: Callable[[ModelRequest], ModelResponse],
 ) -> ModelResponse:
-    new_system_message = SystemMessage(content="Additional context.")
+    # When content is a simple string
+    if isinstance(request.system_message.content, str):
+        new_system_message = SystemMessage(
+            content=f"{request.system_message.content}\n\nAdditional context."
+        )
+        return handler(request.override(system_message=new_system_message))
+
+    # When content is a list of blocks, append a new text block
+    new_content = list(request.system_message.content) + [
+        {"type": "text", "text": "Additional context."}
+    ]
+    new_system_message = SystemMessage(content=new_content)
     return handler(request.override(system_message=new_system_message))
 ```
+
+</Tab>
+
+<Tab title="Class">
+
+```python
+from langchain.agents.middleware import AgentMiddleware, ModelRequest, ModelResponse
+from langchain.messages import SystemMessage
+from typing import Callable
+
+
+class ContextMiddleware(AgentMiddleware):
+    def wrap_model_call(
+        self,
+        request: ModelRequest,
+        handler: Callable[[ModelRequest], ModelResponse],
+    ) -> ModelResponse:
+        # When content is a simple string
+        if isinstance(request.system_message.content, str):
+            new_system_message = SystemMessage(
+                content=f"{request.system_message.content}\n\nAdditional context."
+            )
+            return handler(request.override(system_message=new_system_message))
+
+        # When content is a list of blocks, append a new text block
+        new_content = list(request.system_message.content) + [
+            {"type": "text", "text": "Additional context."}
+        ]
+        new_system_message = SystemMessage(content=new_content)
+        return handler(request.override(system_message=new_system_message))
+```
+
+</Tab>
+</Tabs>
+
+**Example: Working with cache control (Anthropic)**
+
+When working with Anthropic models, you can use structured content blocks with cache control directives to cache large system prompts:
+
+<Tabs>
+<Tab title="Decorator">
+
+```python
+from langchain.agents.middleware import wrap_model_call, ModelRequest, ModelResponse
+from langchain.messages import SystemMessage
+from typing import Callable
+
+
+@wrap_model_call
+def add_cached_context(
+    request: ModelRequest,
+    handler: Callable[[ModelRequest], ModelResponse],
+) -> ModelResponse:
+    # Build new content with cache control
+    # When content is a string, convert to list of blocks first
+    if isinstance(request.system_message.content, str):
+        base_content = [{"type": "text", "text": request.system_message.content}]
+    else:
+        base_content = list(request.system_message.content)
+
+    # Add new content block with cache control
+    new_content = base_content + [
+        {
+            "type": "text",
+            "text": "Here is a large document to analyze:\n\n<document>...</document>",
+            # content up until this point is cached
+            "cache_control": {"type": "ephemeral"}
+        }
+    ]
+
+    new_system_message = SystemMessage(content=new_content)
+    return handler(request.override(system_message=new_system_message))
+```
+
+</Tab>
+
+<Tab title="Class">
+
+```python
+from langchain.agents.middleware import AgentMiddleware, ModelRequest, ModelResponse
+from langchain.messages import SystemMessage
+from typing import Callable
+
+
+class CachedContextMiddleware(AgentMiddleware):
+    def wrap_model_call(
+        self,
+        request: ModelRequest,
+        handler: Callable[[ModelRequest], ModelResponse],
+    ) -> ModelResponse:
+        # Build new content with cache control
+        # When content is a string, convert to list of blocks first
+        if isinstance(request.system_message.content, str):
+            base_content = [{"type": "text", "text": request.system_message.content}]
+        else:
+            base_content = list(request.system_message.content)
+
+        # Add new content block with cache control
+        new_content = base_content + [
+            {
+                "type": "text",
+                "text": "Here is a large document to analyze:\n\n<document>...</document>",
+                "cache_control": {"type": "ephemeral"}  # This content will be cached
+            }
+        ]
+
+        new_system_message = SystemMessage(content=new_content)
+        return handler(request.override(system_message=new_system_message))
+```
+
+</Tab>
+</Tabs>
+
+**Notes:**
+- `ModelRequest.system_message` is always a @[`SystemMessage`] object, even if the agent was created with `system_prompt="string"`
+- `SystemMessage.content` can be either a `str` or a list of content blocks (e.g., `[{"type": "text", "text": "...", "cache_control": {...}}]`)
+- When modifying system messages with structured content blocks, convert to a list first and append new blocks to preserve existing structure
+- You can pass @[`SystemMessage`] objects directly to `create_agent`'s `system_prompt` parameter for advanced use cases like cache control
+
 :::
 
 :::js

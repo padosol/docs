@@ -7,17 +7,18 @@ A chronological log of updates and improvements to LangChain JavaScript.
 
 ## v1.1 (11/25/2025)
 
-**LangChain v1.1 focuses on improving agent reliability and flexibility.** This release introduces model profiles for better model capability awareness, new middleware capabilities for retrying model calls and content moderation, improved system message handling, and enhanced compatibility with Zod v4.
-
 * [Model profiles](/oss/langchain/models#model-profiles): Chat models now expose supported features and capabilities through a `.profile` getter. These data are derived from [models.dev](https://github.com/sst/models.dev), an open source project providing model capability data.
-* [System message improvements](/oss/langchain/middleware/custom#working-with-system-messages): Support for passing `SystemMessage` instances directly to `systemPrompt` parameter and new `concat` method for extending system messages. Enables advanced features like cache control and structured content blocks.
+* [Summarization middleware](/oss/langchain/middleware/built-in#summarization): Updated to support flexible trigger points using model profiles for context-aware summarization.
+* [Structured output](/oss/langchain/structured-output): `ProviderStrategy` support (native structured output) can now be inferred from model profiles.
+* [custom `SystemMessage`s](/oss/langchain/middleware/custom#working-with-system-messages): Support for passing `SystemMessage` instances directly to `systemPrompt` parameter and a new `concat` method for extending system messages. Enables advanced features like cache control and structured content blocks.
 * [Model retry middleware](/oss/langchain/middleware/built-in#model-retry): New middleware for automatically retrying failed model calls with configurable exponential backoff, improving agent reliability.
-* [Content moderation middleware](/oss/langchain/middleware/built-in#content-moderation): OpenAI content moderation middleware for detecting and handling unsafe content in agent interactions. Supports checking user input, AI output, and tool results.
-* [Compatibility improvements](/oss/javascript/releases/langchain-v1#compatibility-improvements): LangChain.js now supports Zod v4 with backward compatibility, enabling use of the latest Zod features for structured output and tool schemas.
+* [Content moderation middleware](/oss/langchain/middleware/built-in#content-moderation): OpenAI content moderation middleware for detecting and handling unsafe content in agent interactions. Supports checking user input, model output, and tool results.
+* Compatibility improvements: LangChain.js now supports Zod v4 with backward compatibility, enabling use of the latest Zod features for structured output and tool schemas.
 
 ### Resources
 
 - [Migration guide](/oss/migrate/langchain-v1) - How to migrate to LangChain v1
+- [V1 Release notes](/oss/javascript/releases/langchain-v1) - Detailed release notes
 - [Release policy](/oss/javascript/release-policy) - Detailed release policies
 - [Versioning](/oss/javascript/versioning) - Understanding version numbers
 - [Report issues on GitHub](https://github.com/langchain-ai/langchainjs/issues)
