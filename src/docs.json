@@ -386,7 +386,8 @@
                       "icon": "list",
                       "pages": [
                         "oss/python/langchain/academy",
-                        "oss/python/langgraph/case-studies"
+                        "oss/python/langgraph/case-studies",
+                        "oss/python/langchain/get-help"
                       ]
                     }
                   ]
@@ -757,7 +758,8 @@
                       "group": "Additional resources",
                       "icon": "list",
                       "pages": [
-                        "oss/javascript/langgraph/case-studies"
+                        "oss/javascript/langgraph/case-studies",
+                        "oss/javascript/langchain/get-help"
                       ]
                     }
                   ]
@@ -901,7 +903,8 @@
                     "langsmith/scalability-and-resilience",
                     "langsmith/faq",
                     "langsmith/regions-faq",
-                    "langsmith/pricing-faq"
+                    "langsmith/pricing-faq",
+                    "langsmith/status"
                   ]
                 }
               ]
