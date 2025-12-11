@@ -62,7 +62,18 @@ The right architecture depends on how your agents need to interact with users an
   </Accordion>
 </AccordionGroup>
 
-### Supervisor
+### Customize agent context
+
+At the center of multi-agent design is **[context engineering](/oss/langchain/context-engineering)** - deciding what information each agent sees. LangChain gives you fine-grained control over:
+
+* Which parts of the conversation or state are passed to each agent.
+* Specialized prompts tailored to sub-agents.
+* Inclusion/exclusion of intermediate reasoning.
+* Customizing input/output formats per agent.
+
+The quality of your system depends on context engineering. The goal is to ensure that each agent has access to the correct data it needs to perform its task, whether it's acting as a tool or as an active agent.
+
+## Supervisor
 
 In the **supervisor** architecture, a central supervisor agent coordinates sub-agents by calling them as tools. The supervisor decides which sub-agent to invoke, what input to provide, and how to combine results.
 
@@ -310,7 +321,7 @@ const callSubagent1 = tool(
 :::
 
 
-### Dynamic agent
+## Dynamic agent
 
 In the **dynamic agent** architecture, you have a single agent whose behavior (prompt, tools, and capabilities) changes dynamically based on state. Under the hood, this is a state machine implemented via [middleware](/oss/langchain/middleware/overview) that performs handoffs through tool calls.
 
@@ -416,7 +427,7 @@ const agent = createAgent({
 The key mechanism is using @[`Command`] to update state fields that control which agent configuration is active. Middleware can then read this state and dynamically configure the agent's behavior.
 
 
-### Workflow
+## Workflow
 
 In the **workflow** architecture, agents are connected via deterministic transitions defined at graph construction time. The flow between agents is explicit and predictable.
 
@@ -529,7 +540,7 @@ const result = await workflow.invoke({
 :::
 
 
-### Skills
+## Skills
 
 In the **skills** architecture, specialized capabilities are packaged as invokable "skills" that augment an agent's behavior. Skills are primarily prompt-driven specializations that an agent can invoke on-demand.
 
@@ -557,15 +568,3 @@ Use the skills pattern when you want a **single agent with many possible special
 <Note>
 Skills documentation is coming soon. This pattern is being developed as part of the [deep-agents](https://github.com/langchain-ai/deep-agents) project.
 </Note>
-
-
-## Customize agent context
-
-At the center of multi-agent design is **[context engineering](/oss/langchain/context-engineering)** - deciding what information each agent sees. LangChain gives you fine-grained control over:
-
-* Which parts of the conversation or state are passed to each agent.
-* Specialized prompts tailored to sub-agents.
-* Inclusion/exclusion of intermediate reasoning.
-* Customizing input/output formats per agent.
-
-The quality of your system depends on context engineering. The goal is to ensure that each agent has access to the correct data it needs to perform its task, whether it's acting as a tool or as an active agent.
