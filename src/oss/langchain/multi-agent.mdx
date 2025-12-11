@@ -293,12 +293,12 @@ In **handoffs**, agents pass control to each other. There are two main approache
 
 | Approach | How it works | Best for |
 |----------|--------------|----------|
-| [**Tool handoffs**](#tool-handoffs) | Agent calls a tool that updates state to transfer control | Dynamic routing, user-driven flows |
+| [**Middleware handoffs**](#middleware-handoffs) | Agent calls a tool that updates state to transfer control | Dynamic routing, user-driven flows |
 | [**Graph handoffs**](#graph-handoffs) | Graph edges define transitions between agents | Fixed pipelines, deterministic routing |
 
-### Tool handoffs
+### Middleware handoffs
 
-In **tool handoffs**, agents pass control through **state transitions**. Think of it as a state machine where the system tracks which agent is currently active, and that agent's configuration (system prompt, tools, etc.) determines the behavior. For example:
+In **middleware handoffs**, agents pass control through **state transitions**. Think of it as a state machine where the system tracks which agent is currently active, and that agent's configuration (system prompt, tools, etc.) determines the behavior. For example:
 
 1. The **current agent** decides it needs to transfer control to another agent.
 2. It calls a tool that updates a state variable (e.g., `active_agent`).
@@ -312,7 +312,7 @@ graph LR
     C --> A
 ```
 
-Tool handoffs are particularly valuable for **"online"** customer support scenarios where you need to collect information in a specific sequence (e.g., collecting a warranty ID before processing a refund). The key advantage is **sequential unlocking** — capabilities become available only after required information has been collected.
+Middleware handoffs are particularly valuable for **"online"** customer support scenarios where you need to collect information in a specific sequence (e.g., collecting a warranty ID before processing a refund). The key advantage is **sequential unlocking** — capabilities become available only after required information has been collected.
 
 <Card
     title="Tutorial: Build a customer support agent with handoffs"
@@ -320,14 +320,14 @@ Tool handoffs are particularly valuable for **"online"** customer support scenar
     href="/oss/langchain/customer-support-handoffs"
     arrow cta="Learn more"
 >
-    Learn how to build a customer support workflow using tool handoffs, where agents pass control through state transitions.
+    Learn how to build a customer support workflow using middleware handoffs, where agents pass control through state transitions.
 </Card>
 
 <Tip>
     Design handoff flows carefully to avoid creating rigid, frustrating experiences. Users should be able to correct mistakes, change the conversation flow, and navigate back to previous steps. Overly restrictive handoff patterns can feel like poorly designed phone trees.
 </Tip>
 
-#### How tool handoffs work
+#### How middleware handoffs work
 
 At the core, handoffs rely on [persistent state](/oss/langchain/short-term-memory) that survives across conversation turns:
 
