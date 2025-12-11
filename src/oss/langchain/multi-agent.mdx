@@ -11,6 +11,17 @@ Multi-agent systems are useful when:
 * [Context](/oss/concepts/context) or [memory](/oss/langchain/short-term-memory) grows too large for one agent to track effectively.
 * Tasks require **specialization** (e.g., a planner, researcher, math expert).
 
+## Multi-agent context engineering
+
+At the center of multi-agent design is **[context engineering](/oss/langchain/context-engineering)** - deciding what information each agent sees. LangChain gives you fine-grained control over:
+
+* Which parts of the conversation or state are passed to each agent.
+* Specialized prompts tailored to sub-agents.
+* Inclusion/exclusion of intermediate reasoning.
+* Customizing input/output formats per agent.
+
+The quality of your system depends on context engineering. The goal is to ensure that each agent has access to the correct data it needs to perform its task, whether it's acting as a tool or as an active agent.
+
 ## Multi-agent patterns
 
 Multi-agent systems enable you to build sophisticated applications by combining specialized agents. There are three main patterns:
@@ -25,16 +36,7 @@ Multi-agent systems enable you to build sophisticated applications by combining 
     You can mix patterns! For example, use **handoffs** for agent switching and have each agent **call sub-agents as tools** for specialized tasks, or have a supervisor invoke **skills** at certain stages.
 </Tip>
 
-## Multi-agent context engineering
-
-At the center of multi-agent design is **[context engineering](/oss/langchain/context-engineering)** - deciding what information each agent sees. LangChain gives you fine-grained control over:
-
-* Which parts of the conversation or state are passed to each agent.
-* Specialized prompts tailored to sub-agents.
-* Inclusion/exclusion of intermediate reasoning.
-* Customizing input/output formats per agent.
-
-The quality of your system depends on context engineering. The goal is to ensure that each agent has access to the correct data it needs to perform its task, whether it's acting as a tool or as an active agent.
+{/* TODO: insert how to decide table or flow chart or something!! */}
 
 ### Tool calling
 
@@ -71,7 +73,7 @@ Use tool calling when you have multiple distinct domains (e.g., calendar, email,
     Learn how to build a personal assistant using the supervisor pattern, where a central supervisor agent coordinates specialized worker agents.
 </Card>
 
-#### Example
+### Example
 
 The example below shows how a main agent is given access to a single sub-agent via a tool definition:
 
@@ -132,7 +134,7 @@ In this pattern:
 2. The sub-agent runs independently and returns its result.
 3. The main agent receives the result and continues orchestration.
 
-#### Where to customize
+### Where to customize
 
 There are several points where you can control how context is passed between the main agent and its subagents:
 
@@ -141,7 +143,7 @@ There are several points where you can control how context is passed between the
 3. **[Input to the sub-agent](#control-the-input-to-the-sub-agent)**: You can customize this input to better shape how the sub-agent interprets tasks. In the example above, we pass the agent-generated `query` directly.
 4. **[Output from the sub-agent](#control-the-output-from-the-sub-agent)**: This is the response passed back to the main agent. You can adjust what is returned to control how the main agent interprets results. In the example above, we return the final message text, but you could return additional state or metadata.
 
-##### Control the input to the sub-agent
+#### Control the input to the sub-agent
 
 There are two main levers to control the input that the main agent passes to a sub-agent:
 
@@ -202,7 +204,7 @@ const callSubagent1 = tool(
 ```
 :::
 
-##### Control the output from the sub-agent
+#### Control the output from the sub-agent
 
 Two common strategies for shaping what the main agent receives back from a sub-agent:
 
@@ -285,7 +287,7 @@ const callSubagent1 = tool(
 :::
 
 
-### Handoffs
+## Handoffs
 
 In **handoffs**, agents pass control to each other. There are two main approaches:
 
@@ -294,7 +296,7 @@ In **handoffs**, agents pass control to each other. There are two main approache
 | [**Tool handoffs**](#tool-handoffs) | Agent calls a tool that updates state to transfer control | Dynamic routing, user-driven flows |
 | [**Graph handoffs**](#graph-handoffs) | Graph edges define transitions between agents | Fixed pipelines, deterministic routing |
 
-#### Tool handoffs
+### Tool handoffs
 
 In **tool handoffs**, agents pass control through **state transitions**. Think of it as a state machine where the system tracks which agent is currently active, and that agent's configuration (system prompt, tools, etc.) determines the behavior. For example:
 
@@ -325,7 +327,7 @@ Tool handoffs are particularly valuable for **"online"** customer support scenar
     Design handoff flows carefully to avoid creating rigid, frustrating experiences. Users should be able to correct mistakes, change the conversation flow, and navigate back to previous steps. Overly restrictive handoff patterns can feel like poorly designed phone trees.
 </Tip>
 
-##### How tool handoffs work
+#### How tool handoffs work
 
 At the core, handoffs rely on [persistent state](/oss/langchain/short-term-memory) that survives across conversation turns:
 
@@ -335,7 +337,7 @@ At the core, handoffs rely on [persistent state](/oss/langchain/short-term-memor
 
 This pattern creates a state machine where each agent represents a distinct state with its own behavior and capabilities. The state persists between user messages, allowing the conversation to resume with the correct agent configuration.
 
-##### Example
+#### Example
 
 Here's an example showing how agents hand off control via tools:
 
@@ -396,7 +398,7 @@ const agent = createAgent({
 
 The key mechanism is using @[`Command`] to update state fields that control which agent is active. Middleware can then read this state and dynamically configure the agent's behavior.
 
-#### Graph handoffs
+### Graph handoffs
 
 In **graph handoffs**, transitions between agents are defined by graph edges rather than tool calls. The flow is deterministic and defined at graph construction time.
 
@@ -431,7 +433,7 @@ Common examples:
 - **Data processing**: extract → validate → transform → load
 - **Intent-based routing**: classify user intent and route to the appropriate specialist
 
-##### Example
+#### Example
 
 <Tabs>
   <Tab title="Sequential">
@@ -588,6 +590,13 @@ Common examples:
         .add_conditional_edges("router", route_to_agent)
         .compile()
     )
+
+    # Invoke the workflow
+    result = workflow.invoke({
+        "messages": [{"role": "user", "content": "I need a refund for order #12345"}]
+    })
+    for msg in result["messages"]:
+        msg.pretty_print()
     ```
     :::
     :::js
@@ -644,13 +653,22 @@ Common examples:
       .addEdge(START, "router")
       .addConditionalEdges("router", routeToAgent)
       .compile();
+
+    // Invoke the workflow
+    const result = await workflow.invoke({
+      messages: [{ role: "user", content: "I need a refund for order #12345" }]
+    });
+
+    for (const msg of result.messages) {
+      console.log(msg.content);
+    }
     ```
     :::
   </Tab>
 </Tabs>
 
 
-### Skills
+## Skills
 
 In the **skills** architecture, specialized capabilities are packaged as invokable "skills" that augment an agent's behavior. Skills use **progressive disclosure** — a context management technique where the agent loads information on-demand rather than upfront.
 
@@ -677,7 +695,76 @@ Use skills when you have a **single agent with many possible specializations** a
     Learn how to implement skills with progressive disclosure, where the agent loads specialized prompts and schemas on-demand rather than upfront.
 </Card>
 
-#### Trade-offs
+### Example
+
+Skills are typically implemented as tools that inject specialized context into the agent's prompt:
+
+:::python
+```python
+from langchain.tools import tool
+from langchain.agents import create_agent
+
+# Define skill content (could be loaded from files, databases, etc.)
+SKILLS = {
+    "python": "You are an expert Python developer. Use type hints, follow PEP 8...",
+    "sql": "You are a SQL expert. The database schema is: users(id, name, email)...",
+    "docs": "You are a documentation specialist. Follow the style guide..."
+}
+
+@tool
+def load_skill(skill_name: str) -> str:
+    """Load a specialized skill to help with the current task.
+
+    Available skills: python, sql, docs
+    """
+    if skill_name not in SKILLS:
+        return f"Unknown skill: {skill_name}. Available: {list(SKILLS.keys())}"
+    return f"Skill loaded. Additional context:\n\n{SKILLS[skill_name]}"
+
+agent = create_agent(
+    model="openai:gpt-4o",
+    tools=[load_skill, ...],  # Other tools the agent needs
+    prompt="You are a helpful assistant. Use load_skill to gain expertise when needed."
+)
+```
+:::
+:::js
+```typescript
+import { tool, createAgent } from "langchain";
+import * as z from "zod";
+
+// Define skill content (could be loaded from files, databases, etc.)
+const SKILLS: Record<string, string> = {
+  python: "You are an expert Python developer. Use type hints, follow PEP 8...",
+  sql: "You are a SQL expert. The database schema is: users(id, name, email)...",
+  docs: "You are a documentation specialist. Follow the style guide..."
+};
+
+const loadSkill = tool(
+  async ({ skillName }) => {
+    if (!(skillName in SKILLS)) {
+      return `Unknown skill: ${skillName}. Available: ${Object.keys(SKILLS).join(", ")}`;
+    }
+    return `Skill loaded. Additional context:\n\n${SKILLS[skillName]}`;
+  },
+  {
+    name: "load_skill",
+    description: "Load a specialized skill to help with the current task. Available skills: python, sql, docs",
+    schema: z.object({
+      skillName: z.string().describe("The name of the skill to load")
+    })
+  }
+);
+
+const agent = createAgent({
+  model: "openai:gpt-4o",
+  tools: [loadSkill, ...otherTools],
+  prompt: "You are a helpful assistant. Use load_skill to gain expertise when needed."
+});
+```
+:::
+
+### Trade-offs
 
 **Benefits:**
 - **Reduces context usage**: Load only the 2-3 skills needed for a task, not all available skills
