@@ -538,10 +538,19 @@ Complete args: {'title': 'Artificial Intelligence: An Overview', 'content': '# A
 
 ### Programmatic tool calling
 
+<Info>
+    Programmatic tool calling requires:
+
+    - Claude Sonnet 4.5 or Opus 4.5.
+    - `langchain-anthropic>=1.3.0`
+
+    You must specify the `advanced-tool-use-2025-11-20` beta header to enable programmatic tool calling.
+</Info>
+
 Tools can be configured to be callable from Claude's [code execution](#code-execution) environment, reducing latency and token consumption in contexts involving large data processing or multi-tool workflows.
 
 Refer to Claude's [programmatic tool calling guide](https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling) for details. To use this feature:
-- Include the `"advanced-tool-use-2025-11-20"` beta header in your requests
+
 - Include the [code execution](#code-execution) built-in tool in your set of tools
 - Specify `extras={"allowed_callers": ["code_execution_20250825"]}` on tools you wish to call programmatically
 
@@ -550,6 +559,7 @@ See below for a full example with [`create_agent`](/oss/langchain/agents).
 <Tip>
     You can specify `reuse_last_container` on initialization to automatically reuse code execution containers from previous model responses.
 </Tip>
+
 ```python
 from langchain.agents import create_agent
 from langchain.tools import tool
@@ -1453,7 +1463,7 @@ See the [Claude documentation](https://platform.claude.com/docs/en/build-with-cl
 <Info>
     **Context management is supported since `langchain-anthropic>=0.3.21`**
 
-    You must speficy the `context-management-2025-06-27` beta header to apply context management to your model calls.
+    You must specify the `context-management-2025-06-27` beta header to apply context management to your model calls.
 </Info>
 
 ```python
