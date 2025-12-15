@@ -203,6 +203,8 @@ LINK_MAPS: list[LinkMap] = [
             "Client.aevaluate": "langsmith/observability/sdk/client/#langsmith.client.Client.aevaluate",
             "Client.get_experiment_results": "langsmith/observability/sdk/client/#langsmith.client.Client.get_experiment_results",
             "ExperimentResults": "langsmith/observability/sdk/evaluation/#langsmith.evaluation._runner.ExperimentResults",
+            "traceable": "langsmith/observability/sdk/run_helpers/#langsmith.run_helpers.traceable",
+            "@traceable": "langsmith/observability/sdk/run_helpers/#langsmith.run_helpers.traceable",
             # LangGraph
             "get_stream_writer": "langgraph/config/#langgraph.config.get_stream_writer",
             "StateGraph": "langgraph/graphs/#langgraph.graph.state.StateGraph",
