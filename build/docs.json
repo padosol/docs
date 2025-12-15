@@ -636,14 +636,16 @@
                           "pages": [
                             "oss/javascript/integrations/providers/openai",
                             "oss/javascript/integrations/chat/openai",
-                            "oss/javascript/integrations/text_embedding/openai"
+                            "oss/javascript/integrations/text_embedding/openai",
+                            "oss/javascript/integrations/tools/openai"
                           ]
                         },
                         {
                           "group": "Anthropic",
                           "pages": [
                             "oss/javascript/integrations/providers/anthropic",
-                            "oss/javascript/integrations/chat/anthropic"
+                            "oss/javascript/integrations/chat/anthropic",
+                            "oss/javascript/integrations/tools/anthropic"
                           ]
                         },
                         {
