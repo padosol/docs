@@ -74,7 +74,7 @@ a[href] code {
   text-decoration: none !important;
 }
 
-/* Compact first column for multi agent pattern comparison tables (no horizontal scroll)*/
+/* Compact first column for multi agent pattern comparison tables (no horizontal scroll) */
 .compact-first-col [data-table-wrapper] {
   overflow-x: visible !important;
 }
@@ -94,3 +94,9 @@ a[href] code {
   width: 1% !important;
   white-space: nowrap !important;
 }
+
+/* Hide auto-generated callouts on home page */
+.home-page ~ :is(.callout, [data-callout-type]) {
+  display: none !important;
+}
+
