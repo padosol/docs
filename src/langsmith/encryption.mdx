@@ -3,18 +3,14 @@ title: Add encryption at-rest
 sidebarTitle: Encryption at-rest
 ---
 
-LangGraph Platform supports encryption at-rest for checkpoint data and metadata. You can choose between basic encryption with a single key or custom encryption for advanced use cases.
-
-<Note>
-Encryption at-rest is available for LangGraph Platform deployments (Python graphs only).
-</Note>
+Agent Server supports encryption at-rest for checkpoint data and metadata. You can choose between basic encryption with a single key or custom encryption for advanced use cases.
 
 ## Choosing an encryption method
 
 | Method | What's encrypted | Use case |
 |--------|------------------|----------|
 | **Basic encryption** | Checkpoint blobs only | Single static key, automatic AES encryption |
-| **Custom encryption** | Checkpoints + JSON fields | Per-tenant keys, KMS integration, selective field encryption |
+| **Custom encryption** | Checkpoints, threads, runs, assistants and crons | Per-tenant keys, KMS integration, selective field encryption |
 
 ## Basic encryption
 
@@ -35,6 +31,10 @@ For simple encryption with a single static key, set the `LANGGRAPH_AES_KEY` envi
 Basic encryption only encrypts checkpoint blobs. Metadata fields remain unencrypted and searchable.
 
 ## Custom encryption
+
+<Note>
+Custom encryption is available for Agent Server deployments (Python graphs only, API version 0.6.6+).
+</Note>
 
 Use custom encryption when you need:
 
@@ -114,29 +114,6 @@ The `ctx.metadata` dict comes from the `X-Encryption-Context` header and is stor
 
 JSON handlers encrypt structured data like thread metadata, assistant context, and run kwargs. Unlike blob encryption, you choose which fields to encrypt—keeping some unencrypted for search and filtering.
 
-<Warning>
-**Encrypted fields cannot be searched or filtered.** Design your metadata schema so that fields you need to query remain unencrypted.
-</Warning>
-
-<Warning>
-**JSON encryptors must preserve key structure.** SQL JSONB merge operations work at the key level. Encryptors that change keys—whether by consolidating fields (e.g., moving sensitive data into `__encrypted__`) or by encrypting key names themselves—cause data loss during merges. Use per-key encryption: transform values in-place while preserving keys.
-</Warning>
-
-<Note>
-**Migration consideration:** Use a recognizable prefix or format in encrypted values so your decryptor can detect and skip unencrypted data. This allows you to encrypt additional fields in the future without re-encrypting existing records. The examples below use this pattern.
-</Note>
-
-<Note>
-**Performance consideration:** Per-key encryption means one encryption call per field. If your encryption involves round-trips to an external service (e.g., KMS), this can significantly impact latency. Consider caching data keys locally or using envelope encryption where you encrypt a local data key with KMS and use it for multiple fields.
-</Note>
-
-Common fields to leave **unencrypted** for search and filtering:
-
-- User-defined fields for access control queries (e.g., `tenant_id`, `owner`)
-- `run_id`, `thread_id`, `graph_id`, `assistant_id`, `user_id`, `checkpoint_id` — system-populated identifiers
-- `source`, `step`, `parents`, `run_attempt` — system-populated execution state
-- `langgraph_version`, `langgraph_api_version`, `langgraph_plan`, `langgraph_host`, `langgraph_api_url`, `langgraph_request_id`, `langgraph_auth_user`, `langgraph_auth_user_id`, `langgraph_auth_permissions` — system-populated platform metadata
-
 ```python
 import json
 import os
@@ -195,6 +172,31 @@ async def decrypt_json(ctx: EncryptionContext, data: dict) -> dict:
             result[k] = v
     return result
 ```
+
+#### JSON encryption considerations
+
+<Warning>
+**Encrypted fields cannot be searched or filtered.** Design your metadata schema so that fields you need to query remain unencrypted.
+</Warning>
+
+<Warning>
+**JSON encryptors must preserve key structure.** SQL JSONB merge operations work at the key level. Encryptors that change keys—whether by consolidating fields (e.g., moving sensitive data into `__encrypted__`) or by encrypting key names themselves—cause data loss during merges. Use per-key encryption: transform values in-place while preserving keys.
+</Warning>
+
+<Note>
+**Migration consideration:** Use a recognizable prefix or format in encrypted values so your decryptor can detect and skip unencrypted data. This allows you to encrypt additional fields in the future without re-encrypting existing records. The example above uses this pattern.
+</Note>
+
+<Note>
+**Performance consideration:** Per-key encryption means one encryption call per field. If your encryption involves round-trips to an external service (e.g., KMS), this can significantly impact latency. Consider caching data keys locally or using envelope encryption where you encrypt a local data key with KMS and use it for multiple fields.
+</Note>
+
+Common fields to leave **unencrypted** for search and filtering:
+
+- User-defined fields for access control queries (e.g., `tenant_id`, `owner`)
+- `run_id`, `thread_id`, `graph_id`, `assistant_id`, `user_id`, `checkpoint_id` — system-populated identifiers
+- `source`, `step`, `parents`, `run_attempt` — system-populated execution state
+- `langgraph_version`, `langgraph_api_version`, `langgraph_plan`, `langgraph_host`, `langgraph_api_url`, `langgraph_request_id`, `langgraph_auth_user`, `langgraph_auth_user_id`, `langgraph_auth_permissions` — system-populated platform metadata
 
 #### What gets encrypted
 
