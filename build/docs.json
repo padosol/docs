@@ -1307,7 +1307,6 @@
                   "group": "Tools and integrations",
                   "pages": [
                     "langsmith/agent-builder-tools",
-                    "langsmith/agent-builder-mcp-framework",
                     "langsmith/agent-builder-slack-app"
                   ]
                 },
@@ -1315,7 +1314,8 @@
                   "group": "Advanced",
                   "pages": [
                     "langsmith/agent-builder-auth-format",
-                    "langsmith/agent-builder-code"
+                    "langsmith/agent-builder-code",
+                    "langsmith/agent-builder-mcp-framework"
                   ]
                 }
               ]
