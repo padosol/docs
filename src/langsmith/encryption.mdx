@@ -10,7 +10,7 @@ Agent Server supports encryption at-rest for checkpoint data and metadata. You c
 | Method | What's encrypted | Use case |
 |--------|------------------|----------|
 | **Basic encryption** | Checkpoint blobs only | Single static key, automatic AES encryption |
-| **Custom encryption** | Checkpoints, threads, runs, assistants and crons | Per-tenant keys, KMS integration, selective field encryption |
+| **Custom encryption** | Checkpoints, threads, runs, assistants, crons and stores | Per-tenant keys, KMS integration, selective field encryption |
 
 ## Basic encryption
 
@@ -210,6 +210,7 @@ Common fields to leave **unencrypted** for search and filtering:
 - `assistant.metadata`, `assistant.context`
 - `run.metadata`, `run.kwargs`
 - `cron.metadata`, `cron.payload`
+- `store.value`
 
 **Blob handlers** (`@encryption.encrypt.blob` / `@encryption.decrypt.blob`):
 
@@ -245,7 +246,7 @@ async def decrypt_assistant(ctx: EncryptionContext, data: dict) -> dict:
     return decrypt_encrypted_fields(data)
 ```
 
-Supported model types: `thread`, `assistant`, `run`, `cron`, `checkpoint`.
+Supported model types: `thread`, `assistant`, `run`, `cron`, `store`, `checkpoint`.
 
 #### Deriving context from authentication
 
