@@ -17,6 +17,8 @@ What's possible with LangChain streaming:
 * <Icon icon="table" size={16} /> [**Stream custom updates**](#custom-updates) — emit user-defined signals (e.g., `"Fetched 10/100 records"`).
 * <Icon icon="layer-plus" size={16} /> [**Stream multiple modes**](#stream-multiple-modes) — choose from `updates` (agent progress), `messages` (LLM tokens + metadata), or `custom` (arbitrary user data).
 
+See the [common patterns](#common-patterns) section below for additional end-to-end examples.
+
 ## Supported stream modes
 
 
@@ -255,6 +257,8 @@ for await (const [streamMode, chunk] of await agent.stream(
     console.log(`${streamMode}: ${JSON.stringify(chunk, null, 2)}`);
 }
 ```
+
+
 
 
 ## Disable streaming
