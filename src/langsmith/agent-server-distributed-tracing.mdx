@@ -4,14 +4,14 @@ sidebarTitle: Distributed tracing
 description: Unify traces when calling your deployed Agent Server from another service using RemoteGraph or the SDK.
 ---
 
-When you call a deployed Agent Server from another service, you can propagate trace context so that the entire request appears as a single unified trace in LangSmith. This uses LangSmith's [distributed tracing](/langsmith/distributed-tracing) capabilities, which propagate context via HTTP headers.
+When you call a deployed [Agent Server](/langsmith/agent-server) from another service, you can propagate trace context so that the entire request appears as a single unified trace in LangSmith. This uses LangSmith's [distributed tracing](/langsmith/distributed-tracing) capabilities, which propagate context via HTTP headers.
 
 ## How it works
 
 Distributed tracing links runs across services using context propagation headers:
 
-1. The **client** infers the trace context from the current run and sends it as HTTP headers
-2. The **server** reads the headers and adds them to the run's config and metadata as `langsmith-trace` and `langsmith-project` configurable values. You can choose to use thes to set the tracing context for a given run when your agent is used.
+1. The **client** infers the trace context from the current run and sends it as HTTP headers.
+2. The **server** reads the headers and adds them to the run's config and metadata as `langsmith-trace` and `langsmith-project` configurable values. You can choose to use these to set the tracing context for a given run when your agent is used.
 
 The headers used are:
 - `langsmith-trace`: Contains the trace's dotted order.
@@ -60,7 +60,7 @@ Export this `graph` function in your `langgraph.json`:
 <Tabs>
 <Tab title="RemoteGraph">
 
-Set `distributed_tracing=True` when initializing `RemoteGraph`. This automatically propagates trace headers on all requests.
+Set `distributed_tracing=True` when initializing @[`RemoteGraph`]. This automatically propagates trace headers on all requests.
 
 ```python
 from langgraph.graph import StateGraph
@@ -94,7 +94,7 @@ result = graph.invoke("What's the weather in SF?")
 </Tab>
 <Tab title="SDK">
 
-If you're using the LangGraph SDK directly, propagate trace headers manually using `run_tree.to_headers()`:
+If you're using the [LangGraph SDK](/langsmith/reference) directly, propagate trace headers manually using `run_tree.to_headers()`:
 
 ```python
 from langgraph_sdk import get_client
