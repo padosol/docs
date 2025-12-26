@@ -21,7 +21,7 @@ Insights uses hierarchical categorization to make sense of your data and highlig
 
 <Frame caption="Auto configuration flow for Insights Agent"><img src="/langsmith/images/insights-autogenerate-config.png" /> </Frame>
 
-#### From the [LangSmith UI](https://smith.langchain.com):
+#### From the [LangSmith UI](https://smith.langchain.com)
 
 1. Navigate to **Tracing Projects** in the left-hand menu and select a tracing project.
 2. Click **+New** in the top right corner then **New Insights Report** to generate new insights over the project.
@@ -33,7 +33,8 @@ Insights uses hierarchical categorization to make sense of your data and highlig
 
 This will kick off a background Insights Report. Reports can take up to 30 minutes to complete.
 
-#### From the [LangSmith SDK](https://reference.langchain.com/python/langsmith/observability/sdk/client/#langsmith.client.Client):
+#### From the [LangSmith SDK](https://reference.langchain.com/python/langsmith/observability/sdk/client/#langsmith.client.Client)
+
 You can generate Insights Reports over data stored outside LangSmith using the Python SDK. This allows you to analyze chat histories from your production systems, logs, or other sources.
 
 When you call `generate_insights()`, the SDK will:
