@@ -4965,8 +4965,8 @@
             "properties": {
               "strategy": {
                 "type": "string",
-                "enum": ["delete"],
-                "description": "The TTL strategy. 'delete' removes the entire thread.",
+                "enum": ["delete", "keep_latest"],
+                "description": "The TTL strategy. 'delete' removes the entire thread. 'keep_latest' prunes old checkpoints but keeps the thread and its latest state (requires FF_USE_CORE_API=true).",
                 "default": "delete"
               },
               "ttl": {
@@ -5009,8 +5009,8 @@
             "properties": {
               "strategy": {
                 "type": "string",
-                "enum": ["delete"],
-                "description": "The TTL strategy. 'delete' removes the entire thread.",
+                "enum": ["delete", "keep_latest"],
+                "description": "The TTL strategy. 'delete' removes the entire thread. 'keep_latest' prunes old checkpoints but keeps the thread and its latest state (requires FF_USE_CORE_API=true).",
                 "default": "delete"
               },
               "ttl": {
