@@ -1326,6 +1326,17 @@
             },
             "name": "thread_id",
             "in": "path"
+          },
+          {
+            "description": "Comma-separated list of additional fields to include. Supported values: ttl",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Include",
+              "description": "Comma-separated list of additional fields to include."
+            },
+            "name": "include",
+            "in": "query"
           }
         ],
         "responses": {
@@ -4926,6 +4937,27 @@
             "type": "object",
             "title": "Interrupts",
             "description": "The current interrupts of the thread."
+          },
+          "ttl": {
+            "type": "object",
+            "title": "TTL Info",
+            "description": "TTL information if set for this thread. Only present when ?include=ttl is passed.",
+            "properties": {
+              "strategy": {
+                "type": "string",
+                "enum": ["delete", "keep_latest"],
+                "description": "The TTL strategy."
+              },
+              "ttl_minutes": {
+                "type": "number",
+                "description": "The TTL in minutes."
+              },
+              "expires_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When the thread will expire."
+              }
+            }
           }
         },
         "type": "object",
@@ -4965,8 +4997,8 @@
             "properties": {
               "strategy": {
                 "type": "string",
-                "enum": ["delete"],
-                "description": "The TTL strategy. 'delete' removes the entire thread.",
+                "enum": ["delete", "keep_latest"],
+                "description": "The TTL strategy. 'delete' removes the entire thread. 'keep_latest' prunes old checkpoints but keeps the thread and its latest state (requires FF_USE_CORE_API=true).",
                 "default": "delete"
               },
               "ttl": {
@@ -5009,8 +5041,8 @@
             "properties": {
               "strategy": {
                 "type": "string",
-                "enum": ["delete"],
-                "description": "The TTL strategy. 'delete' removes the entire thread.",
+                "enum": ["delete", "keep_latest"],
+                "description": "The TTL strategy. 'delete' removes the entire thread. 'keep_latest' prunes old checkpoints but keeps the thread and its latest state (requires FF_USE_CORE_API=true).",
                 "default": "delete"
               },
               "ttl": {
